@@ -1,0 +1,53 @@
+// Definir el instrumento y los indicadores técnicos
+instrument {
+    name = 'jony',
+    short_name = '',
+  
+    overlay =true,false
+}
+
+MaFast_period = input(1,"Ma Fast period",input.integer,1,1000,1)
+MaValue = input(5,"Ma Value", input.string_selection,inputs.titles)
+
+MaSlow_period = input(34,"Ma Slow period",input.integer,1,1000,1)
+
+Signal_period = input(8,"Signal period",input.integer,1,1000,1)
+
+// Calcular los indicadores técnicos
+smaFast = sma(titleValue, MaFast_period)
+smaSlow = sma(titleValue, MaSlow_period)
+volume = volume()
+
+// Definir la señal de compra
+buyCondition = (smaFast > smaSlow) and (volume > average(volume, 10)) and (close > smaFast[1])
+
+// Definir la señal de venta
+sellCondition = (smaFast < smaSlow) and (volume < average(volume, 10)) and (close < smaFast[1])
+
+// Agregar una orden de stop-loss
+stopLoss = smaFast[1] - 100
+
+// Plotear las señales
+plot_shape(
+    (buyCondition),
+    "30",
+    shape_style.arrowup,
+    shape_size.large,
+    colorBuy,
+    shape_location.belowbar,
+    -1,
+    " PROX VELA",
+    "GREEN"
+)
+
+plot_shape(
+    (sellCondition),
+    "30",
+    shape_style.arrowdown,
+    shape_size.large,
+    colorSell,
+    shape_location.abovebar,
+    -1,
+    " PROX VELA",
+    "RED"
+)
